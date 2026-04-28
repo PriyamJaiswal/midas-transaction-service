@@ -1,0 +1,579 @@
+{
+	"info": {
+		"_postman_id": "midas-core-api-collection",
+		"name": "Midas Core API Collection",
+		"description": "Comprehensive API testing collection for Midas Core Transaction Processing System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "🔍 Health Check",
+			"item": [
+				{
+					"name": "Application Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:33400/actuator/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "33400",
+							"path": [
+								"actuator",
+								"health"
+							]
+						},
+						"description": "Check if the application is running and healthy"
+					},
+					"response": []
+				}
+			],
+			"description": "Basic health checks for the application"
+		},
+		{
+			"name": "💰 Balance Operations",
+			"item": [
+				{
+					"name": "Get User Balance",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:33400/balance?userId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "33400",
+							"path": [
+								"balance"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "1",
+									"description": "User ID to check balance for"
+								}
+							]
+						},
+						"description": "Retrieve current balance for a specific user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Balance - Non-existent User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:33400/balance?userId=999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "33400",
+							"path": [
+								"balance"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "999",
+									"description": "Non-existent user ID (should return 0.0)"
+								}
+							]
+						},
+						"description": "Test balance check for non-existent user (should return 0.0)"
+					},
+					"response": []
+				}
+			],
+			"description": "Operations related to user balance management"
+		},
+		{
+			"name": "📊 Transaction Management",
+			"item": [
+				{
+					"name": "Get Transaction by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:33400/api/incentives/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "33400",
+							"path": [
+								"api",
+								"incentives",
+								"1"
+							]
+						},
+						"description": "Retrieve transaction details including incentive information"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction - Non-existent ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:33400/api/incentives/999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "33400",
+							"path": [
+								"api",
+								"incentives",
+								"999"
+							]
+						},
+						"description": "Test retrieval of non-existent transaction (should return null)"
+					},
+					"response": []
+				}
+			],
+			"description": "Transaction query and management operations"
+		},
+		{
+			"name": "🔄 Kafka Transaction Processing",
+			"item": [
+				{
+					"name": "Send Transaction to Kafka",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"txnId\": \"txn_{{$randomUUID}}\",\n  \"amount\": 100.50,\n  \"senderId\": 1,\n  \"recipientId\": 2\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/kafka/send",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"kafka",
+								"send"
+							]
+						},
+						"description": "Send a transaction message to Kafka topic (requires Kafka producer endpoint)"
+					},
+					"response": []
+				},
+				{
+					"name": "Send Large Transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"txnId\": \"txn_large_{{$randomUUID}}\",\n  \"amount\": 5000.00,\n  \"senderId\": 1,\n  \"recipientId\": 2\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/kafka/send",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"kafka",
+								"send"
+							]
+						},
+						"description": "Send a large transaction to test incentive calculation"
+					},
+					"response": []
+				},
+				{
+					"name": "Send Invalid Transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"txnId\": \"txn_invalid_{{$randomUUID}}\",\n  \"amount\": -50.00,\n  \"senderId\": 1,\n  \"recipientId\": 2\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/kafka/send",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"kafka",
+								"send"
+							]
+						},
+						"description": "Send invalid transaction (negative amount) to test validation"
+					},
+					"response": []
+				}
+			],
+			"description": "Kafka-based transaction processing tests"
+		},
+		{
+			"name": "🎯 Incentive Service Tests",
+			"item": [
+				{
+					"name": "Direct Incentive Calculation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"test_txn_{{$randomUUID}}\",\n  \"amount\": 200.00,\n  \"senderId\": 1,\n  \"recipientId\": 2\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/incentive",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"incentive"
+							]
+						},
+						"description": "Test external incentive service directly"
+					},
+					"response": []
+				},
+				{
+					"name": "Incentive Service - Zero Amount",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"test_zero_{{$randomUUID}}\",\n  \"amount\": 0.00,\n  \"senderId\": 1,\n  \"recipientId\": 2\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/incentive",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"incentive"
+							]
+						},
+						"description": "Test incentive calculation with zero amount"
+					},
+					"response": []
+				}
+			],
+			"description": "Direct tests for the external incentive service"
+		},
+		{
+			"name": "🧪 Integration Test Scenarios",
+			"item": [
+				{
+					"name": "Complete Transaction Flow",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Store transaction ID for later use",
+									"const txnId = 'txn_flow_' + Date.now();",
+									"pm.environment.set('currentTxnId', txnId);",
+									"console.log('Generated transaction ID:', txnId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"txnId\": \"{{currentTxnId}}\",\n  \"amount\": 150.75,\n  \"senderId\": 1,\n  \"recipientId\": 2\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/kafka/send",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"kafka",
+								"send"
+							]
+						},
+						"description": "Step 1: Send transaction to Kafka"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Balance Update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Wait for transaction processing",
+									"setTimeout(function() {",
+									"    pm.test('Balance should be updated', function() {",
+									"        pm.sendRequest({",
+									"            url: 'http://localhost:33400/balance?userId=1',",
+									"            method: 'GET'",
+									"        }, function (err, res) {",
+									"            if (err) {",
+									"                console.log('Error checking balance:', err);",
+									"            } else {",
+									"                const balance = res.json().balance;",
+									"                console.log('Sender balance:', balance);",
+									"            }",
+									"        });",
+									"    });",
+									"}, 2000);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:33400/balance?userId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "33400",
+							"path": [
+								"balance"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Step 2: Check sender balance after transaction"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Transaction Record",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:33400/api/incentives/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "33400",
+							"path": [
+								"api",
+								"incentives",
+								"1"
+							]
+						},
+						"description": "Step 3: Verify transaction was recorded with incentive"
+					},
+					"response": []
+				}
+			],
+			"description": "End-to-end integration test scenarios"
+		},
+		{
+			"name": "⚠️ Error Handling Tests",
+			"item": [
+				{
+					"name": "Invalid User ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:33400/balance?userId=abc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "33400",
+							"path": [
+								"balance"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "abc"
+								}
+							]
+						},
+						"description": "Test with invalid user ID format"
+					},
+					"response": []
+				},
+				{
+					"name": "Missing Required Parameter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:33400/balance",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "33400",
+							"path": [
+								"balance"
+							]
+						},
+						"description": "Test without required userId parameter"
+					},
+					"response": []
+				},
+				{
+					"name": "Service Unavailable Scenario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"txnId\": \"txn_failover_{{$randomUUID}}\",\n  \"amount\": 100.00,\n  \"senderId\": 1,\n  \"recipientId\": 2\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/kafka/send",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"kafka",
+								"send"
+							]
+						},
+						"description": "Test transaction processing when incentive service is down"
+					},
+					"response": []
+				}
+			],
+			"description": "Test error handling and edge cases"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global pre-request script",
+					"console.log('Executing request:', pm.info.requestName);",
+					"console.log('Timestamp:', new Date().toISOString());"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test script",
+					"pm.test('Response time is less than 5000ms', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+					"});",
+					"",
+					"pm.test('Response has proper Content-Type', function () {",
+					"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:33400",
+			"type": "string"
+		},
+		{
+			"key": "kafkaUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "incentiveServiceUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
